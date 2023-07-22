@@ -1,0 +1,28 @@
+{
+  "dependencies": {
+    "@react-three/fiber": "^8.3.1",
+    "expo": "^48.0.7",
+    "expo-asset": "~8.9.1",
+    "expo-file-system": "~15.2.2",
+    "expo-gl": "~12.4.0",
+    "expo-modules-core": "~1.2.4",
+    "expo-three": "^6.2.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-native": "0.71.3",
+    "react-native-web": "~0.18.7",
+    "three": "^0.145.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.19.3"
+  },
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web"
+  },
+  "version": "1.0.0",
+  "private": true,
+  "name": "vr"
+}
