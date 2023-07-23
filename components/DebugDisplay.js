@@ -1,8 +1,14 @@
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { stateContext } from "../redux/context";
 
 export default function DebugDisplay(props) {
+    const state = useContext(stateContext);
+
     let lines = [];
+    for(let key in state) {
+        lines.push(key+":\t"+state[key]);
+    }
     for(let key in props) {
         lines.push(key+":\t"+props[key]);
     }
