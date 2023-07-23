@@ -21,7 +21,7 @@ export function reducer(state, action) {
         */
         case 'gyro': 
             return { ...state,
-                x: state.x + action.payload.y,
+                x: state.x + -1*action.payload.y,
                 y: state.y + action.payload.x,
                 z: state.z + action.payload.z,
             };

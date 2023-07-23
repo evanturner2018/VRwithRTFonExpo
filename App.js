@@ -31,7 +31,6 @@ function App() {
           <Box position={[1.2, 0, 0]} />
         </Canvas>
         <Sensors />
-        <DebugDisplay />
         <Screen />
       </stateDispatchContext.Provider>
     </stateContext.Provider>

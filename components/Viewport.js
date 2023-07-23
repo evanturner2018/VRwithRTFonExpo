@@ -1,10 +1,12 @@
 import { useFrame, useThree } from "@react-three/fiber"
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { Color, PerspectiveCamera } from "three";
 import { initReducer } from "../redux/reducer";
+import { stateContext } from "../redux/context";
 
 export default function Viewport() {
     const { scene, gl, size } = useThree();
+    const state = useContext(stateContext);
 
     let w, h;
     useEffect(() => {
@@ -12,10 +14,14 @@ export default function Viewport() {
         h = size.height;
     })
     useFrame(()=>{
-        draw(scene, gl, w, h);
+        draw(scene, gl, w, h, state);
     });
 
     return <></>;
+}
+
+function rad(deg) {
+    return Math.PI*deg/180;
 }
 
   // landscape: 2556w x 1011h
@@ -30,7 +36,7 @@ function draw( scene, gl, w, h, state=initReducer() ) {
 
     views.forEach((camera, i) =>  {
         camera.position.fromArray([0, 0, 5]);
-        camera.rotation.fromArray([state.x, state.y, state.z])
+        camera.rotation.fromArray([rad(state.x), rad(state.y), rad(state.z)])
         
         gl.setViewport(i*w/2, 0, w/2, h);
         gl.setScissor(i*w/2, 0, w/2, h);
