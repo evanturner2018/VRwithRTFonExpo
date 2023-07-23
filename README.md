@@ -1,3 +1,5 @@
+run "npx expo start" or "npm start"
+
 # React Three Fiber Example
 
 <p>
