@@ -3,6 +3,7 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { useEffect, useState } from "react";
 import { Gyroscope } from 'expo-sensors';
 import Box from "./components/Box"
+import Eye from "./components/Eye"
 
 /*
 other available sensors:
@@ -10,7 +11,7 @@ https://docs.expo.dev/versions/v48.0.0/sdk/sensors/
 accelerometer, pedometer, deviceMotion
 */
 
-export default function App2() {
+function App2() {
   // gyroscope in degrees/second
   const [{x, y, z}, setGyro] = useState({x:0, y:0, z:0});
   const [sub, setSub] = useState(null);
@@ -42,18 +43,20 @@ export default function App2() {
   );
 }
 
-function App() {
+export default function App() {
   return (
     <View style={styles.container}>
       <Canvas>
+        <Eye left={0} />
+        <Eye left={0.5} />
         <ambientLight />
         <pointLight position={[10, 10, 10]} />
         <Box position={[-1.2, 0, 0]} />
-        <Box position={[1.2, 0, 0]} />
       </Canvas>
     </View>
   );
 }
+// <Box position={[1.2, 0, 0]} />
 
 const styles = StyleSheet.create({
   text: {
@@ -61,10 +64,7 @@ const styles = StyleSheet.create({
     fontSize: "20px",
   },
   container: {
-    top: "5%",
     flex: 1,
-    flexDirection: "column",
-    padding: "10%",
     backgroundColor: "black",
   },
 });
