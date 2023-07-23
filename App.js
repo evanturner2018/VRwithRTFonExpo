@@ -2,18 +2,14 @@ import { StyleSheet, View, Text } from "react-native";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { useEffect, useState } from "react";
 import { Gyroscope } from 'expo-sensors';
-import Box from "./components/Box"
-import Eye from "./components/Eye"
+import Box from "./components/Box";
+import Viewport from "./components/Viewport";
 
 /*
 other available sensors:
 https://docs.expo.dev/versions/v48.0.0/sdk/sensors/
 accelerometer, pedometer, deviceMotion
 */
-
-const scale = 1;
-const w = 800/scale;
-const h = 300/scale;
 
 function App2() {
   // gyroscope in degrees/second
@@ -50,17 +46,17 @@ function App2() {
 export default function App() {
   // landscape: 2556w x 1011h
   // portrait: 1179w x 2388h
-  const [data, setData] = useState(-1);
 
   return (
+    <View style={styles.container}>
       <Canvas style={styles.canvas}>
-        <Eye left={0} w={w} h={h} setData={setData}/>
-        <Eye left={0.5} w={w} h={h} setData={setData} />
+        <Viewport />
         <ambientLight />
         <pointLight position={[10, 10, 10]} />
         <Box position={[-1.2, 0, 0]} />
         <Box position={[1.2, 0, 0]} />
       </Canvas>
+    </View>
   );
 }
 
@@ -75,13 +71,6 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
   },
   canvas: {
-    borderColor: "black",
-    borderRadius: 5,
-    backgroundColor: "black",
-    width: w,
-    height: h,
-    position: "absolute",
-    left: 0,
-    bottom: 0
+
   },
 });
