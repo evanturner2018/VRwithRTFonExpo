@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "5bd4f51c-3aae-4f11-b84f-a86b287a46a8"
+      }
+    },
+    "android": {
+      "package": "com.appledog12.vr"
+    }
+  }
+}
