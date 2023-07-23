@@ -9,14 +9,27 @@ export function initReducer() {
 
 export function reducer(state, action) {
     switch(action.type) {
+        /*
+        * Sensors (regardless of orientation): 
+        *   x runs short side of screen
+        *   y runs long side of screen
+        *   z perpendicular to screen
+        * In THREE:
+        *   x runs left->right
+        *   y runs bottom->top
+        *   z perpendicular
+        */
         case 'gyro': 
             return { ...state,
-                x: state.x + action.payload.x,
-                y: state.y + action.payload.y,
+                x: state.x + action.payload.y,
+                y: state.y + action.payload.x,
                 z: state.z + action.payload.z,
             };
         case 'zero':
             return initReducer();
+        case 'alert':
+            alert(action.payload);
+            return state;
     }
 }
 

@@ -14,7 +14,7 @@ export default function DebugDisplay(props) {
     }
     return (
         <View style={styles.container}>
-            {lines.map( (line) => (<Text style={styles.text}>{line}</Text>) )}
+            {lines.map( (line, idx) => (<Text key={idx} style={styles.text}>{line}</Text>) )}
         </View>
     )
 }

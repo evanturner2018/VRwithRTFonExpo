@@ -21,18 +21,16 @@ export default function Viewport() {
   // landscape: 2556w x 1011h
   // portrait: 1179w x 2388h
 function draw( scene, gl, w, h, state=initReducer() ) {
-
+    let fov = 30;
     let views = [
-        new PerspectiveCamera(45, w/h, 1, 1000),
-        new PerspectiveCamera(45, w/h, 1, 1000),
+        new PerspectiveCamera(fov, w/h, 1, 1000),
+        new PerspectiveCamera(fov, w/h, 1, 1000),
     ];
     views.push(views[0]); // TODO: figure out why final camera is smaller
 
     views.forEach((camera, i) =>  {
         camera.position.fromArray([0, 0, 5]);
-        camera.rotateX = state.x;
-        camera.rotateY = state.y;
-        camera.rotateZ = state.z;
+        camera.rotation.fromArray([state.x, state.y, state.z])
         
         gl.setViewport(i*w/2, 0, w/2, h);
         gl.setScissor(i*w/2, 0, w/2, h);
