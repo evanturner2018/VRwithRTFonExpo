@@ -11,6 +11,10 @@ https://docs.expo.dev/versions/v48.0.0/sdk/sensors/
 accelerometer, pedometer, deviceMotion
 */
 
+const scale = 1;
+const w = 800/scale;
+const h = 300/scale;
+
 function App2() {
   // gyroscope in degrees/second
   const [{x, y, z}, setGyro] = useState({x:0, y:0, z:0});
@@ -44,27 +48,40 @@ function App2() {
 }
 
 export default function App() {
+  // landscape: 2556w x 1011h
+  // portrait: 1179w x 2388h
+  const [data, setData] = useState(-1);
+
   return (
-    <View style={styles.container}>
-      <Canvas>
-        <Eye left={0} />
-        <Eye left={0.5} />
+      <Canvas style={styles.canvas}>
+        <Eye left={0} w={w} h={h} setData={setData}/>
+        <Eye left={0.5} w={w} h={h} setData={setData} />
         <ambientLight />
         <pointLight position={[10, 10, 10]} />
         <Box position={[-1.2, 0, 0]} />
+        <Box position={[1.2, 0, 0]} />
       </Canvas>
-    </View>
   );
 }
-// <Box position={[1.2, 0, 0]} />
 
 const styles = StyleSheet.create({
   text: {
+    top: 50,
     color: "white",
-    fontSize: "20px",
+    fontSize: 20,
   },
   container: {
     flex: 1,
     backgroundColor: "black",
+  },
+  canvas: {
+    borderColor: "black",
+    borderRadius: 5,
+    backgroundColor: "black",
+    width: w,
+    height: h,
+    position: "absolute",
+    left: 0,
+    bottom: 0
   },
 });
