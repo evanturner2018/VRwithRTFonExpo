@@ -1,6 +1,5 @@
-import { StyleSheet, View } from "react-native";
-import { Canvas, context } from "@react-three/fiber";
-import { createContext, useReducer } from "react";
+import { StyleSheet } from "react-native";
+import { Canvas } from "@react-three/fiber";
 
 import Box from "./components/Box";
 import Viewport from "./components/Viewport";
@@ -8,6 +7,7 @@ import Sensors from "./components/Sensors";
 import DebugDisplay from "./components/DebugDisplay";
 import { stateContext, stateDispatchContext } from "./redux/context";
 import { initReducer, reducer } from "./redux/reducer";
+import { useReducer } from "react";
 
 export default function Root() {
   // landscape: 2556w x 1011h
