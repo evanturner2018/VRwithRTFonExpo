@@ -1,7 +1,6 @@
 import { createContext, useContext, useEffect, useReducer, useState } from "react";
 import { Gyroscope } from 'expo-sensors';
 import { StyleSheet, View, Text } from "react-native";
-import { initReducer, reducer } from "../redux/reducer";
 import { stateDispatchContext } from "../redux/context";
 
 /*

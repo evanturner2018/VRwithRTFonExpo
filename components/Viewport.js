@@ -24,18 +24,24 @@ function rad(deg) {
     return Math.PI*deg/180;
 }
 
+function deg(rad) {
+    return 180*rad/Math.PI;
+}
+
   // landscape: 2556w x 1011h
   // portrait: 1179w x 2388h
 function draw( scene, gl, w, h, state=initReducer() ) {
-    let fov = 30;
+    const eyeToPhone = 1.5;
+    const eyeToEdge = 1;
+    const fov = 50//deg(Math.atan(eyeToEdge/eyeToPhone)); // ~100
     let views = [
         new PerspectiveCamera(fov, w/h, 1, 1000),
-        new PerspectiveCamera(fov, w/h, 1, 1000),
-    ];
+        new PerspectiveCamera(fov, w/h, 1, 1000)
+    ]
     views.push(views[0]); // TODO: figure out why final camera is smaller
-
+    
     views.forEach((camera, i) =>  {
-        camera.position.fromArray([0, 0, 5]);
+        camera.position.fromArray([0, 0, 10]);
         camera.rotation.fromArray([rad(state.x), rad(state.y), rad(state.z)])
         
         gl.setViewport(i*w/2, 0, w/2, h);
@@ -57,4 +63,12 @@ could solve:
 * set Viewport to not render in the regular loop
 * make two cameras and attach them to the render loop
 * make camera/viewport/scissor a <> component
+*/
+
+/*
+* FOV
+* near: phone screen z - eye z ~= 2"
+* at z=0, ~1.5" from middle to edge
+* arctan(1.5/2)
+* trial-and-error until looking straight up and down works
 */

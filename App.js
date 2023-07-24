@@ -5,18 +5,26 @@ import Box from "./components/Box";
 import Viewport from "./components/Viewport";
 import Sensors from "./components/Sensors";
 import DebugDisplay from "./components/DebugDisplay";
+import StaticBox from "./components/StaticBox";
+
 import { stateContext, stateDispatchContext } from "./redux/context";
 import { initReducer, reducer } from "./redux/reducer";
-import { useContext, useReducer } from "react";
-import { useConstant } from "@react-spring/shared";
+import { useContext, useEffect, useReducer } from "react";
+import * as ScreenOrientation from 'expo-screen-orientation';
 
 export default function Root() {
   // landscape: 2556w x 1011h
   // portrait: 1179w x 2388h
-
   return <App /> ;
 }
 
+
+/*
+* In THREE:
+*   x runs left->right
+*   y runs bottom->top
+*   z perpendicular
+*/
 function App() {
   const [state, dispatch] = useReducer(reducer, null, initReducer);
 
@@ -29,6 +37,10 @@ function App() {
           <pointLight position={[10, 10, 10]} />
           <Box position={[-1.2, 0, 0]} />
           <Box position={[1.2, 0, 0]} />
+          
+          <StaticBox position={[0, 0, -10]} size={[50, 7, 1]} />
+          <StaticBox position={[0, 10, 10]} size={[50, 1, 7]} />
+          <StaticBox position={[0, -10, 10]} size={[50, 1, 7]} />
         </Canvas>
         <Sensors />
         <Screen />
@@ -40,6 +52,21 @@ function App() {
 
 function Screen() {
   const dispatch = useContext(stateDispatchContext);
+
+  async function _lock() {
+    await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE).then(
+      (val) => {
+
+      },
+      (err) => {
+        alert('lock error: '+err);
+      }
+    );
+  }
+
+  useEffect(() => {
+    _lock();
+  }, []);
 
   function _handleTouch() {
     dispatch({

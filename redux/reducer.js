@@ -20,6 +20,9 @@ export function reducer(state, action) {
         *   z perpendicular
         */
         case 'gyro': 
+            for(let key in action.payload) {
+                action.payload[key] = action.payload[key]*10
+            }
             return { ...state,
                 x: state.x + -1*action.payload.y,
                 y: state.y + action.payload.x,
