@@ -60,6 +60,15 @@ function App() {
 function Screen() {
   const dispatch = useContext(stateDispatchContext);
 
+  async function _unlock() {
+    await ScreenOrientation.unlockAsync().then(
+      (val) => {},
+      (err) => {
+        alert('lock error: '+err);
+      }
+    );
+  }
+
   async function _lock() {
     await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE).then(
       (val) => {},
@@ -70,10 +79,11 @@ function Screen() {
   }
 
   useEffect(() => {
-    _lock();
+    _unlock();
   }, []);
 
   function _handleTouch() {
+    _lock();
     dispatch({
       type: 'zero'
     })

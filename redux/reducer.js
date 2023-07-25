@@ -1,19 +1,23 @@
 import { Matrix3, Matrix4, Vector3 } from "three";
 
+const cos = Math.cos;
+const sin = Math.sin;
+const pi = Math.PI;
+
 export function initReducer() {
     return {
         x: 0,
         y: 0,
-        z: 0,
+        z: 0
     }
 }
 
-function rad(deg) {
-    return deg*Math.PI/180;
+function rad(d) {
+    return d*pi/180;
 }
 
-function deg(rad) {
-    return rad*180/Math.PI;
+function deg(r) {
+    return r*180/pi;
 }
 
 export function reducer(state, action) {
@@ -27,48 +31,51 @@ export function reducer(state, action) {
         *   x runs left->right
         *   y runs bottom->top
         *   z perpendicular
-        * Sensors read radians
+        * Sensors read degrees
         * state stores degrees
         */
         case 'gyro': 
-            //let t = updateGyro({x: state.x, y: state.y, z: state.z}, action.payload);
-            let view = [rad(action.payload.x), rad(action.payload.y), rad(action.payload.z)];
-            let rad = 90*Math.PI/180;
-            let R = [[1, 0,             0,                0],
-                [0, Math.cos(rad), -1*Math.sin(rad), 0],
-                [0, Math.sin(rad), Math.cos(rad),    0],
-                [0, 0,             0,                1]];
-            let X = matMult(R, view);
+            let dView = [0, 0, 0.1]; //[rad(action.payload.x), rad(action.payload.y), rad(action.payload.z)];
+            let view = [rad(state.x), rad(state.y), rad(state.z)];
+            dView = matMult(getR([0, 0, rad(90)]), dView); // landscape
+            dView = matMult(getR(view), dView); // rotate sensors to be on THREE.camera's frame
+            let scale = 10;
             return { ...state,
-                x: state.x + deg(X[0]),
-                y: state.y + deg(X[1]),
-                z: state.z + deg(X[2])
+                x: state.x + deg(dView[0])*scale,
+                y: state.y + deg(dView[1])*scale,
+                z: state.z + deg(dView[2])*scale
             };
         case 'zero':
             return initReducer();
     }
 }
 
-// state.x/y/z: degrees
-// sensor: degrees/second
-// Math trig: radians
-function updateGyro(state, sensor) {
-    let turnScale = 10;
+function getR(xyz) {
+    // input can be [3] or Vector3 or gyroData
+    let x, y, z;
+    if(Array.isArray(xyz)) {
+        x = xyz[0];
+        y = xyz[1];
+        z = xyz[2];
+    } else {
+        x = xyz.x ? xyz.x : 0;
+        y = xyz.y ? xyz.y : 0;
+        z = xyz.z ? xyz.z : 0;
+    }
+    return [[cos(z)*cos(y),     -1*sin(z)*sin(x)+cos(z)*sin(y)*sin(x),      cos(z)*sin(y)*cos(x)+sin(z)*sin(x)],
+            [sin(z)*cos(y),     cos(z)*sin(y)*sin(x)+cos(z)*sin(x),         -1*cos(z)*sin(x)+sin(z)*sin(y)*cos(x)],
+            [-1*sin(y),         cos(y)*sin(x),                              cos(y)*cos(x)]];
+}
 
-    // going landscape: rotates sensor around z 90 deg
-    // un-turn the sensors so they're in the same world as the camera
-    let dView = new Vector3(rad(sensor.x), rad(sensor.y), rad(sensor.z));
-    dView.multiplyScalar(turnScale);
-    let dViewLen = dView.length();
-    dView = yaw(dView, rad(-90));
-    /*
-    * Represent sensor's turn as vector dView
-    * Rotate sensor to current view's frame
-    * Use dView to update rotation
-    */
-    //dView = rotate(dView, rad(state.x), rad(state.y), rad(state.z));
-    dView.multiplyScalar(dViewLen*180/Math.PI); // convert to degrees
-    return dView.toArray();
+function transpose(mat) {
+    let mat_t = [];
+    for(let i = mat.length-1; i>=0; i--) {
+        mat_t.push([]);
+        for(let j = mat[i].length-1; j>=0; j--) {
+            mat_t.push(mat[i][j]);
+        }
+    }
+    return mat_t;
 }
 
 function matMult(mat, vec) {
@@ -86,44 +93,6 @@ function matMult(mat, vec) {
     });
 
     return res;
-}
-
-function rotate(vector, x, y, z) {
-    if(!vector.isVector3) vector = new Vector3(vector.x, vector.y, vector.z);
-
-    /*
-    *   Roll: rotation around y-axis
-    *   Pitch: rotation around x-axis
-    *   Yaw: rotation around z-axis
-    */
-    // rotation matrix around x-axis
-    let pitch = new Matrix4(1,              0,              0,              0,
-                            0,              Math.cos(x),    -1*Math.sin(x), 0,
-                            0,              Math.sin(x),    Math.cos(x),    0,
-                            0,              0,              0,              1);
-    // rotate around y-axis
-    let roll = new Matrix4( Math.cos(y),    0,              Math.sin(y),    0,
-                            0,              1,              0,              0,
-                            -1*Math.sin(y), 0,              Math.cos(y),    0,
-                            0,              0,              0,              1);
-    vector = yaw(vector, z);
-    vector.transformDirection(roll);
-    vector.transformDirection(pitch);
-    return vector;
-}
-
-/*
-* Extracted so I can transform sensor to the right frame with only 1 matrix multiplication
-*/
-function yaw(vector, y) {
-    // rotate around z-axis
-    
-    let R = new Matrix4(    Math.cos(y),    -1*Math.sin(y), 0,              0,
-                            Math.sin(y),    Math.cos(y),    0,              0,
-                            0,              0,              1,              0,
-                            0,              0,              0,              1);     
-    vector.transformDirection(R);
-    return vector;     
 }
 
 // legacy: https://legacy.reactjs.org/docs/hooks-reference.html#usereducer
