@@ -1,8 +1,9 @@
 import { useFrame, useThree } from "@react-three/fiber"
 import { useContext, useEffect } from "react";
-import { Color, PerspectiveCamera } from "three";
+import { Color, PerspectiveCamera, Vector3 } from "three";
 import { initReducer } from "../redux/reducer";
 import { stateContext } from "../redux/context";
+import { theme } from "../settings/assets";
 
 export default function Viewport() {
     const { scene, gl, size } = useThree();
@@ -15,7 +16,7 @@ export default function Viewport() {
     })
     useFrame(()=>{
         draw(scene, gl, w, h, state);
-    });
+    }, 1); // the 1 takes over rendering to make it manual
 
     return <></>;
 }
@@ -31,22 +32,23 @@ function deg(rad) {
   // landscape: 2556w x 1011h
   // portrait: 1179w x 2388h
 function draw( scene, gl, w, h, state=initReducer() ) {
-    const eyeToPhone = 1.5;
-    const eyeToEdge = 1;
-    const fov = 50//deg(Math.atan(eyeToEdge/eyeToPhone)); // ~100
+    const eyeToPhone = 3;
+    const eyeToEdge = 2;
+    const fov = 67// deg(Math.atan(eyeToEdge/eyeToPhone)); // ~67
     let views = [
-        new PerspectiveCamera(fov, w/h, 1, 1000),
-        new PerspectiveCamera(fov, w/h, 1, 1000)
+        new PerspectiveCamera(fov, w/2/h, 0.1, 1000),
+        new PerspectiveCamera(fov, w/2/h, 0.1, 1000)
     ]
-    views.push(views[0]); // TODO: figure out why final camera is smaller
     
+    let pinchAngle = 0 // TODO: refactor into reducer
     views.forEach((camera, i) =>  {
-        camera.position.fromArray([0, 0, 10]);
-        camera.rotation.fromArray([rad(state.x), rad(state.y), rad(state.z)])
+        let pinch = pinchAngle-i*2*pinchAngle;
+        camera.position.fromArray([0, 0, 2]);
+        camera.rotation.fromArray([rad(state.x), rad(state.y+pinch), rad(state.z)]);
         
         gl.setViewport(i*w/2, 0, w/2, h);
         gl.setScissor(i*w/2, 0, w/2, h);
-        gl.setClearColor(new Color().setRGB(0.5, 0.5, 0.7));
+        gl.setClearColor(new Color(theme.dark));
         gl.setScissorTest(true);
 
         camera.updateProjectionMatrix();
@@ -56,19 +58,10 @@ function draw( scene, gl, w, h, state=initReducer() ) {
 }
 
 /*
-the final render is smaller than all before it
-could be:
-* <Canvas /> taking control of camera and messing up Viewport/Scissor
-could solve:
-* set Viewport to not render in the regular loop
-* make two cameras and attach them to the render loop
-* make camera/viewport/scissor a <> component
-*/
-
-/*
 * FOV
 * near: phone screen z - eye z ~= 2"
 * at z=0, ~1.5" from middle to edge
 * arctan(1.5/2)
+* arctan(3/2)*2 = 67.4 deg
 * trial-and-error until looking straight up and down works
 */

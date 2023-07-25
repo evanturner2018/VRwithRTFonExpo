@@ -6,6 +6,8 @@ import Viewport from "./components/Viewport";
 import Sensors from "./components/Sensors";
 import DebugDisplay from "./components/DebugDisplay";
 import StaticBox from "./components/StaticBox";
+import Ball from "./components/Ball";
+import { theme } from "./settings/assets"
 
 import { stateContext, stateDispatchContext } from "./redux/context";
 import { initReducer, reducer } from "./redux/reducer";
@@ -38,9 +40,14 @@ function App() {
           <Box position={[-1.2, 0, 0]} />
           <Box position={[1.2, 0, 0]} />
           
-          <StaticBox position={[0, 0, -10]} size={[50, 7, 1]} />
-          <StaticBox position={[0, 10, 10]} size={[50, 1, 7]} />
-          <StaticBox position={[0, -10, 10]} size={[50, 1, 7]} />
+          <StaticBox color={theme.color1} position={[0, 0, -10]} size={[50, 7, 1]} />
+          <StaticBox color={theme.color1} position={[0, 10, 10]} size={[50, 1, 7]} />
+          <StaticBox color={theme.color1} position={[0, -10, 10]} size={[50, 1, 7]} />
+
+          <Ball 
+            radius={0.1} 
+            position={[0, 0, 0]} color={theme.color2}
+          />
         </Canvas>
         <Sensors />
         <Screen />
@@ -55,9 +62,7 @@ function Screen() {
 
   async function _lock() {
     await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE).then(
-      (val) => {
-
-      },
+      (val) => {},
       (err) => {
         alert('lock error: '+err);
       }

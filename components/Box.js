@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
+import { theme } from "../settings/assets";
 
 export default function Box(props) {
   // This reference will give us direct access to the mesh
@@ -28,7 +29,7 @@ export default function Box(props) {
       <boxBufferGeometry attach="geometry" args={[1, 1, 1]} />
       <meshStandardMaterial
         attach="material"
-        color={hovered ? "hotpink" : "orange"}
+        color={hovered ? theme.color3 : theme.light}
       />
     </mesh>
   );
