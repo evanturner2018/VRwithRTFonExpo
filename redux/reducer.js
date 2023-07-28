@@ -1,4 +1,4 @@
-import { Euler, Vector3, PerspectiveCamera } from "three";
+import { Euler, Vector3, PerspectiveCamera, Quaternion, Matrix4 } from "three";
 import * as Matrix from "../assets/matrices";
 import { updatePeriod_ms } from "../assets/assets";
 
@@ -31,23 +31,30 @@ export function reducer(state, action) {
         case 'gyro': 
             // state.sensorXYZ is rad/s, accumulate until scene is updated
             // transform sensor frame 90 degrees around z-axis: x=-y, y=x, z=z
+            let x = -1*rad(action.payload.y);
+            let y = rad(action.payload.x);
+            let z = rad(action.payload.z);
+            
             state.views.forEach((camera) => {
-                camera.rotation.x += -1*rad(action.payload.y);
-                camera.rotation.y += rad(action.payload.x);
-                camera.rotation.z += rad(action.payload.z);
+                const cameraFrame = new Matrix4().makeRotationFromEuler(camera.rotation);
+                
+                const transformed_x_axis = new Vector3();
+                const transformed_y_axis = new Vector3();
+                const transformed_z_axis = new Vector3();
+                cameraFrame.extractBasis(transformed_x_axis, transformed_y_axis, transformed_z_axis);
+
+                const R_x = new Matrix4().makeRotationAxis(transformed_x_axis, x);
+                const R_y = new Matrix4().makeRotationAxis(transformed_y_axis, y);
+                const R_z = new Matrix4().makeRotationAxis(transformed_z_axis, z);
+                
+                camera.applyMatrix4(R_z);
+                camera.applyMatrix4(R_y);
+                camera.applyMatrix4(R_x);
             })
             return state;
         case 'zero':
             return initReducer();
     }
-}
-
-function updateViews(state) {
-    state.views.forEach((camera) => {
-        camera.rotation.x += state.sensorX;
-        camera.rotation.y += state.sensorY;
-        camera.rotation.z += state.sensorZ;
-    });
 }
 
 // legacy: https://legacy.reactjs.org/docs/hooks-reference.html#usereducer
