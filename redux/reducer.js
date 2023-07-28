@@ -1,5 +1,6 @@
 import { Euler, Vector3, PerspectiveCamera } from "three";
 import * as Matrix from "../assets/matrices";
+import { updatePeriod_ms } from "../assets/assets";
 
 export function initReducer() {
     return {
@@ -7,8 +8,8 @@ export function initReducer() {
         sensorY: 0,
         sensorZ: 0,
         views: [
-            new PerspectiveCamera(67, 1, 0.1, 1000),
-            new PerspectiveCamera(67, 1, 0.1, 1000)
+            new PerspectiveCamera(67, 1.084, 0.1, 1000),
+            new PerspectiveCamera(67, 1.084, 0.1, 1000)
         ]
     }
 }
@@ -32,10 +33,11 @@ export function reducer(state, action) {
         */
         case 'gyro': 
             // angles of rotation around each axis (THREE world frame)
-            // not exactly euler/quaternion angles ?
+            // state.sensorXYZ is rad/s, accumulate until scene is updated
+            // TODO: transform sensor frame 90 degrees around z-axis
             return { ...state,
-                sensorX: state.sensorX + rad(action.payload.x),
-                sensorY: state.sensorY + rad(action.payload.y),
+                sensorX: state.sensorX + -1*rad(action.payload.y),
+                sensorY: state.sensorY + rad(action.payload.x),
                 sensorZ: state.sensorZ + rad(action.payload.z)
             };
         case 'cameraUpdate':

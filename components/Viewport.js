@@ -6,11 +6,10 @@ import { stateContext, stateDispatchContext } from "../redux/context";
 import { theme } from "../assets/assets";
 
 export default function Viewport() {
-    const { size } = useThree();
     const state = useContext(stateContext);
     const dispatch = useContext(stateDispatchContext);
-
-    useFrame(({scene, gl})=>{
+    let scale = 1;
+    useFrame(({scene, gl, size}, delta)=>{
         let w = size.width;
         let h = size.height;
     
@@ -19,10 +18,10 @@ export default function Viewport() {
         state.views.forEach((camera, i) =>  {
             camera.aspect = w/2/h;
 
-            camera.position.fromArray([0, 0, 0]);
-            camera.rotation.x += state.sensorX;
-            camera.rotation.y += state.sensorY;
-            camera.rotation.z += state.sensorZ;
+            scale = delta*100;
+            camera.rotation.x += state.sensorX*scale;
+            camera.rotation.y += state.sensorY*scale;
+            camera.rotation.z += state.sensorZ*scale;
     
             gl.setViewport(i*w/2, 0, w/2, h);
             gl.setScissor(i*w/2, 0, w/2, h);
