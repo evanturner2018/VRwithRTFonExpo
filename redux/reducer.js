@@ -4,9 +4,6 @@ import { updatePeriod_ms } from "../assets/assets";
 
 export function initReducer() {
     return {
-        sensorX: 0,
-        sensorY: 0,
-        sensorZ: 0,
         views: [
             new PerspectiveCamera(67, 1.084, 0.1, 1000),
             new PerspectiveCamera(67, 1.084, 0.1, 1000)
@@ -32,23 +29,25 @@ export function reducer(state, action) {
         * Sensors read degrees/s
         */
         case 'gyro': 
-            // angles of rotation around each axis (THREE world frame)
             // state.sensorXYZ is rad/s, accumulate until scene is updated
-            // TODO: transform sensor frame 90 degrees around z-axis
-            return { ...state,
-                sensorX: state.sensorX + -1*rad(action.payload.y),
-                sensorY: state.sensorY + rad(action.payload.x),
-                sensorZ: state.sensorZ + rad(action.payload.z)
-            };
-        case 'cameraUpdate':
-            return {...state,
-                sensorX: 0,
-                sensorY: 0,
-                sensorZ: 0
-            };
+            // transform sensor frame 90 degrees around z-axis: x=-y, y=x, z=z
+            state.views.forEach((camera) => {
+                camera.rotation.x += -1*rad(action.payload.y);
+                camera.rotation.y += rad(action.payload.x);
+                camera.rotation.z += rad(action.payload.z);
+            })
+            return state;
         case 'zero':
             return initReducer();
     }
+}
+
+function updateViews(state) {
+    state.views.forEach((camera) => {
+        camera.rotation.x += state.sensorX;
+        camera.rotation.y += state.sensorY;
+        camera.rotation.z += state.sensorZ;
+    });
 }
 
 // legacy: https://legacy.reactjs.org/docs/hooks-reference.html#usereducer
