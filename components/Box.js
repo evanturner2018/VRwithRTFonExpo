@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { theme } from "../settings/assets";
+import { theme } from "../assets/assets";
 
 export default function Box(props) {
   // This reference will give us direct access to the mesh

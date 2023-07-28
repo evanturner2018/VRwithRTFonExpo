@@ -1,7 +1,7 @@
-import { createContext, useContext, useEffect, useReducer, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Gyroscope } from 'expo-sensors';
-import { StyleSheet, View, Text } from "react-native";
 import { stateDispatchContext } from "../redux/context";
+import { updatePeriod_ms } from "../assets/assets";
 
 /*
 other available sensors:
@@ -15,6 +15,7 @@ export default function Sensors() {
     const dispatch = useContext(stateDispatchContext);
 
     const _subscribe = () => {
+        Gyroscope.setUpdateInterval(updatePeriod_ms);
         setSub(
             Gyroscope.addListener(gyroscopeData => {
                 dispatch({

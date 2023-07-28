@@ -1,5 +1,11 @@
 {
   "expo": {
+    "plugins": [[
+      "expo-sensors",
+      {
+        "motionPermission": "Allow $(PRODUCT_NAME) to access your device motion."
+      }
+    ]],
     "extra": {
       "eas": {
         "projectId": "5bd4f51c-3aae-4f11-b84f-a86b287a46a8"

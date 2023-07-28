@@ -1,51 +1,63 @@
 import { useFrame, useThree } from "@react-three/fiber"
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Color, PerspectiveCamera, Vector3 } from "three";
 import { initReducer } from "../redux/reducer";
-import { stateContext } from "../redux/context";
-import { theme } from "../settings/assets";
+import { stateContext, stateDispatchContext } from "../redux/context";
+import { theme } from "../assets/assets";
 
 export default function Viewport() {
-    const { scene, gl, size } = useThree();
+    const { size } = useThree();
     const state = useContext(stateContext);
+    const dispatch = useContext(stateDispatchContext);
 
-    let w, h;
-    useEffect(() => {
-        w = size.width;
-        h = size.height;
-    })
-    useFrame(()=>{
-        draw(scene, gl, w, h, state);
+    useFrame(({scene, gl})=>{
+        let w = size.width;
+        let h = size.height;
+    
+        // pinch by rotating along camera.up axis
+        let pinchAngle = 0;
+        state.views.forEach((camera, i) =>  {
+            camera.aspect = w/2/h;
+
+            camera.position.fromArray([0, 0, 0]);
+            camera.rotation.x += state.sensorX;
+            camera.rotation.y += state.sensorY;
+            camera.rotation.z += state.sensorZ;
+    
+            gl.setViewport(i*w/2, 0, w/2, h);
+            gl.setScissor(i*w/2, 0, w/2, h);
+            gl.setClearColor(new Color(theme.dark));
+            gl.setScissorTest(true);
+    
+            camera.updateProjectionMatrix();
+    
+            gl.render(scene, camera);
+        });
+        dispatch({
+            type: 'cameraUpdate'
+        });
     }, 1); // the 1 takes over rendering to make it manual
 
     return <></>;
 }
 
-function rad(deg) {
-    return Math.PI*deg/180;
-}
-
-function deg(rad) {
-    return 180*rad/Math.PI;
-}
-
-  // landscape: 2556w x 1011h
-  // portrait: 1179w x 2388h
-function draw( scene, gl, w, h, state=initReducer() ) {
+function draw(scene, gl, w, h, state, dispatch) {
     const eyeToPhone = 3;
     const eyeToEdge = 2;
     const fov = 67// deg(Math.atan(eyeToEdge/eyeToPhone)); // ~67
+
+    // pinch by rotating along camera.up axis
+    let pinchAngle = 0;
     let views = [
         new PerspectiveCamera(fov, w/2/h, 0.1, 1000),
         new PerspectiveCamera(fov, w/2/h, 0.1, 1000)
-    ]
-    
-    let pinchAngle = 0 // TODO: refactor into reducer
+    ];
     views.forEach((camera, i) =>  {
-        let pinch = pinchAngle-i*2*pinchAngle;
-        camera.position.fromArray([0, 0, 2]);
-        camera.rotation.fromArray([rad(state.x), rad(state.y+pinch), rad(state.z)]);
-        
+        camera.position.fromArray([0, 0, 0]);
+        camera.rotation.x += state.sensorX;
+        camera.rotation.y += state.sensorY;
+        camera.rotation.z += state.sensorZ;
+
         gl.setViewport(i*w/2, 0, w/2, h);
         gl.setScissor(i*w/2, 0, w/2, h);
         gl.setClearColor(new Color(theme.dark));
@@ -55,6 +67,17 @@ function draw( scene, gl, w, h, state=initReducer() ) {
 
         gl.render(scene, camera);
     });
+    dispatch({
+        type: 'cameraUpdate'
+    });
+}
+
+function rad(deg) {
+    return Math.PI*(deg%360)/180;
+}
+
+function deg(rad) {
+    return 180*rad/Math.PI;
 }
 
 /*

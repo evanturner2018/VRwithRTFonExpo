@@ -8,7 +8,7 @@ export default function Ball(props) {
     const [dir, setDir] = useState(1);
 
     useFrame(() => {
-        const delta = 0.1;
+        const delta = 0.1/2;
         const far = props.far ? props.far : props.position[2];
         const near = props.near ? props.near : props.position[2];
         if(ref.current.position.z > far) {

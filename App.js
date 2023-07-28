@@ -7,7 +7,7 @@ import Sensors from "./components/Sensors";
 import DebugDisplay from "./components/DebugDisplay";
 import StaticBox from "./components/StaticBox";
 import Ball from "./components/Ball";
-import { theme } from "./settings/assets"
+import { theme } from "./assets/assets"
 
 import { stateContext, stateDispatchContext } from "./redux/context";
 import { initReducer, reducer } from "./redux/reducer";
@@ -37,17 +37,14 @@ function App() {
           <Viewport />
           <ambientLight />
           <pointLight position={[10, 10, 10]} />
-          <Box position={[-1.2, 0, 0]} />
-          <Box position={[1.2, 0, 0]} />
+          <Box position={[-1.2, 0, -2]} />
+          <Box position={[1.2, 0, -2]} />
           
           <StaticBox color={theme.color1} position={[0, 0, -10]} size={[50, 7, 1]} />
-          <StaticBox color={theme.color1} position={[0, 10, 10]} size={[50, 1, 7]} />
-          <StaticBox color={theme.color1} position={[0, -10, 10]} size={[50, 1, 7]} />
+          <StaticBox color={theme.color1} position={[0, 10, 0]} size={[50, 1, 7]} />
+          <StaticBox color={theme.color1} position={[0, -10, 0]} size={[50, 1, 7]} />
 
-          <Ball 
-            radius={0.1} 
-            position={[0, 0, 0]} color={theme.color2}
-          />
+          <Ball radius={0.1} position={[0, 0, -2]} color={theme.color2}/>
         </Canvas>
         <Sensors />
         <Screen />
@@ -56,6 +53,8 @@ function App() {
     
   );
 }
+
+
 
 function Screen() {
   const dispatch = useContext(stateDispatchContext);

@@ -6,4 +6,4 @@ exports.theme = {
         "color3": "#CFD7C7"
 }
 
-
+exports.updatePeriod_ms = 1600 //ms
