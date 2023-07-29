@@ -5,6 +5,3 @@ exports.theme = {
         "color2": "#70A9A1",
         "color3": "#CFD7C7"
 }
-
-// TODO: speed this up after everything initializes
-exports.updatePeriod_ms = 20 //ms

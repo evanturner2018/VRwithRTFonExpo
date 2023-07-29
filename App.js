@@ -1,5 +1,5 @@
 import { Pressable, StyleSheet, View, Text } from "react-native";
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
 
 import Box from "./components/Box";
 import Viewport from "./components/Viewport";
@@ -13,6 +13,8 @@ import { stateContext, stateDispatchContext } from "./redux/context";
 import { initReducer, reducer } from "./redux/reducer";
 import { useContext, useEffect, useReducer } from "react";
 import * as ScreenOrientation from 'expo-screen-orientation';
+import { WebGLRenderer } from "three";
+import { StereoEffect } from "three/examples/jsm/effects/StereoEffect"
 
 export default function Root() {
   // landscape: 2556w x 1011h
@@ -28,7 +30,6 @@ export default function Root() {
 */
 function App() {
   const [state, dispatch] = useReducer(reducer, null, initReducer);
-
   return (
     <stateContext.Provider value={state}>
       <stateDispatchContext.Provider value={dispatch}>
@@ -45,8 +46,8 @@ function App() {
 
           <Ball radius={0.1} position={[0, 0, -2]} color={theme.color2}/>
         </Canvas>
-        <Sensors />
         <Screen />
+        <Sensors />
       </stateDispatchContext.Provider>
     </stateContext.Provider>
     

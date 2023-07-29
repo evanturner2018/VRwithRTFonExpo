@@ -1,6 +1,4 @@
-import { Euler, Vector3, PerspectiveCamera, Quaternion, Matrix4 } from "three";
-import * as Matrix from "../assets/matrices";
-import { updatePeriod_ms } from "../assets/assets";
+import { Vector3, PerspectiveCamera, Matrix4 } from "three";
 
 export function initReducer() {
     return {
@@ -15,10 +13,6 @@ function rad(d) {
     return d*Math.PI/180;
 }
 
-function deg(r) {
-    return r*180/Math.PI;
-}
-
 export function reducer(state, action) {
     switch(action.type) {
         /*
@@ -29,13 +23,22 @@ export function reducer(state, action) {
         * Sensors read degrees/s
         */
         case 'gyro': 
-            // state.sensorXYZ is rad/s, accumulate until scene is updated
+            // landscape:
             // transform sensor frame 90 degrees around z-axis: x=-y, y=x, z=z
             let x = -1*rad(action.payload.y);
             let y = rad(action.payload.x);
             let z = rad(action.payload.z);
+
+            // scale inputs to be rad/update instead of rad/s
+            // (rad/1000ms)*(period ms/1 update) = rad/update
+            /*
+            x *= state.updatePeriod_ms/1000;
+            y *= state.updatePeriod_ms/1000;
+            z *= state.updatePeriod_ms/1000;
+            */
             
             state.views.forEach((camera) => {
+                // transform sensor input to the camera frame
                 const cameraFrame = new Matrix4().makeRotationFromEuler(camera.rotation);
                 
                 const transformed_x_axis = new Vector3();
@@ -50,7 +53,7 @@ export function reducer(state, action) {
                 camera.applyMatrix4(R_z);
                 camera.applyMatrix4(R_y);
                 camera.applyMatrix4(R_x);
-            })
+            });
             return state;
         case 'zero':
             return initReducer();

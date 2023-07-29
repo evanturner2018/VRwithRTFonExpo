@@ -1,41 +1,30 @@
-import { useFrame, useThree } from "@react-three/fiber"
-import { useContext, useEffect, useState } from "react";
-import { Color, PerspectiveCamera, Vector3 } from "three";
-import { stateContext, stateDispatchContext } from "../redux/context";
+import { useFrame } from "@react-three/fiber"
+import { useContext, useState } from "react";
+import { stateContext } from "../redux/context";
+import { PerspectiveCamera, Color } from "three";
+import { StereoEffect } from "three/examples/jsm/effects/StereoEffect";
 import { theme } from "../assets/assets";
 
 export default function Viewport() {
     const state = useContext(stateContext);
-    
-    useFrame(({scene, gl, size}, delta)=>{
+
+    useFrame(({scene, gl, size})=>{
         let w = size.width;
         let h = size.height;
-    
-        // pinch by rotating along camera.up axis
-        let pinchAngle = 0;
-        state.views.forEach((camera, i) =>  {
-            camera.aspect = w/2/h;
-    
-            gl.setViewport(i*w/2, 0, w/2, h);
-            gl.setScissor(i*w/2, 0, w/2, h);
-            gl.setClearColor(new Color(theme.dark));
-            gl.setScissorTest(true);
-    
-            camera.updateProjectionMatrix();
-    
-            gl.render(scene, camera);
-        });
+        gl.setClearColor(new Color(theme.dark));
+        
+        let camera = state.views[0];
+        camera.aspect = w/h;
+        camera.fov = 70;
+        const stereo = new StereoEffect(gl);
+        stereo.setEyeSeparation(1)
+
+        camera.updateProjectionMatrix();
+        stereo.render(scene, camera);
+        
     }, 1); // the 1 takes over rendering to make it manual
 
     return <></>;
-}
-
-function rad(deg) {
-    return Math.PI*(deg%360)/180;
-}
-
-function deg(rad) {
-    return 180*rad/Math.PI;
 }
 
 /*
