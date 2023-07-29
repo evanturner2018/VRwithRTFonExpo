@@ -5,7 +5,9 @@ export function initReducer() {
         views: [
             new PerspectiveCamera(70, 1.084, 0.1, 1000),
             new PerspectiveCamera(70, 1.084, 0.1, 1000)
-        ]
+        ],
+        position: [0, 2, 0],
+        eyeSep: 0.5, // viewOffset?
     }
 }
 

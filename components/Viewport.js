@@ -1,7 +1,7 @@
 import { useFrame } from "@react-three/fiber"
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { stateContext } from "../redux/context";
-import { Color } from "three";
+import { Color, Vector3 } from "three";
 import { theme } from "../assets/assets";
 
 export default function Viewport() {
@@ -15,6 +15,9 @@ export default function Viewport() {
         let pinch = 0;
         state.views.forEach((camera, i) => {
             camera.aspect = w/2/h;
+            camera.position.x = state.position[0];
+            camera.position.y = state.position[1];
+            camera.position.z = state.position[2];
             
             pinch = i*-0.5;
             camera.rotateY(pinch);

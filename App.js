@@ -1,18 +1,15 @@
 import { Pressable, StyleSheet, View, Text } from "react-native";
 import { Canvas, useFrame } from "@react-three/fiber";
 
-import Box from "./components/Box";
 import Viewport from "./components/Viewport";
 import Sensors from "./components/Sensors";
 import DebugDisplay from "./components/DebugDisplay";
-import StaticBox from "./components/StaticBox";
-import Ball from "./components/Ball";
-import { theme } from "./assets/assets"
 
 import { stateContext, stateDispatchContext } from "./redux/context";
 import { initReducer, reducer } from "./redux/reducer";
 import { useContext, useEffect, useReducer } from "react";
 import * as ScreenOrientation from 'expo-screen-orientation';
+import SampleScene from "./components/SampleScene";
 
 
 export default function Root() {
@@ -36,14 +33,7 @@ function App() {
           <Viewport />
           <ambientLight />
           <pointLight position={[10, 10, 10]} />
-          <Box position={[-1.2, 0, -2]} />
-          <Box position={[1.2, 0, -2]} />
-          
-          <StaticBox color={theme.color1} position={[0, 0, -10]} size={[50, 7, 1]} />
-          <StaticBox color={theme.color1} position={[0, 10, 0]} size={[50, 1, 7]} />
-          <StaticBox color={theme.color1} position={[0, -10, 0]} size={[50, 1, 7]} />
-
-          <Ball radius={0.1} position={[0, 0, -2]} color={theme.color2}/>
+          <SampleScene />
         </Canvas>
         <Screen />
         <Sensors />
