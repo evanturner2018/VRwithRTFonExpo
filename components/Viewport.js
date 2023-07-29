@@ -19,7 +19,9 @@ export default function Viewport() {
             camera.position.y = state.position[1];
             camera.position.z = state.position[2];
             
-            pinch = i*-0.5;
+            // left needs positive rotation, right needs negative
+            // y-axis goes up, counter-clockwise is positive
+            pinch = (state.eyePinch/2) - (state.eyePinch)*i;
             camera.rotateY(pinch);
             gl.setViewport(i*w/2, 0, w/2, h);
             gl.setScissor(i*w/2, 0, w/2, h);

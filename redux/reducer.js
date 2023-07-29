@@ -7,7 +7,9 @@ export function initReducer() {
             new PerspectiveCamera(70, 1.084, 0.1, 1000)
         ],
         position: [0, 2, 0],
+        velocity: [0, 0, 0],
         eyeSep: 0.5, // viewOffset?
+        eyePinch: 0.5, // radians, 0.5 magic number somehow
     }
 }
 
@@ -57,6 +59,21 @@ export function reducer(state, action) {
                 camera.applyMatrix4(R_x);
             });
             return state;
+        /*
+        *   measured in m/2^s
+        *   accumulate vX/vY/vZ in m/s
+        *   update position by them every second (scaled by clock delta)
+        */
+        case 'accelerometer':
+            // transform sensor to world frame (from phone frame)
+            let a = [action.payload.x, action.payload.y, action.payload.z];
+            let v = state.velocity;
+            for(let i = 0; i<v.length; i++) {
+                v[i] += a[i]*20/1000;
+            }
+            return {...state,
+                velocity: v
+            }
         case 'zero':
             return initReducer();
     }
