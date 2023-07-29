@@ -1,8 +1,7 @@
 import { useFrame } from "@react-three/fiber"
 import { useContext, useState } from "react";
 import { stateContext } from "../redux/context";
-import { PerspectiveCamera, Color } from "three";
-import { StereoEffect } from "three/examples/jsm/effects/StereoEffect";
+import { Color } from "three";
 import { theme } from "../assets/assets";
 
 export default function Viewport() {
@@ -13,15 +12,21 @@ export default function Viewport() {
         let h = size.height;
         gl.setClearColor(new Color(theme.dark));
         
-        let camera = state.views[0];
-        camera.aspect = w/h;
-        camera.fov = 70;
-        const stereo = new StereoEffect(gl);
-        stereo.setEyeSeparation(1)
+        let pinch = 0;
+        state.views.forEach((camera, i) => {
+            camera.aspect = w/2/h;
+            
+            pinch = i*-0.5;
+            camera.rotateY(pinch);
+            gl.setViewport(i*w/2, 0, w/2, h);
+            gl.setScissor(i*w/2, 0, w/2, h);
+            gl.setScissorTest(true);
 
-        camera.updateProjectionMatrix();
-        stereo.render(scene, camera);
-        
+            camera.updateProjectionMatrix();
+            gl.render(scene, camera);
+
+            camera.rotateY(-1*pinch);
+        })
     }, 1); // the 1 takes over rendering to make it manual
 
     return <></>;

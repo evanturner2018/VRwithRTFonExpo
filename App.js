@@ -13,8 +13,7 @@ import { stateContext, stateDispatchContext } from "./redux/context";
 import { initReducer, reducer } from "./redux/reducer";
 import { useContext, useEffect, useReducer } from "react";
 import * as ScreenOrientation from 'expo-screen-orientation';
-import { WebGLRenderer } from "three";
-import { StereoEffect } from "three/examples/jsm/effects/StereoEffect"
+
 
 export default function Root() {
   // landscape: 2556w x 1011h

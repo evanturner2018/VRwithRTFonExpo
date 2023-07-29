@@ -3,8 +3,8 @@ import { Vector3, PerspectiveCamera, Matrix4 } from "three";
 export function initReducer() {
     return {
         views: [
-            new PerspectiveCamera(67, 1.084, 0.1, 1000),
-            new PerspectiveCamera(67, 1.084, 0.1, 1000)
+            new PerspectiveCamera(70, 1.084, 0.1, 1000),
+            new PerspectiveCamera(70, 1.084, 0.1, 1000)
         ]
     }
 }
