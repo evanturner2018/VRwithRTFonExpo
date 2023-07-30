@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { Gyroscope } from 'expo-sensors';
+import { Gyroscope, Accelerometer, DeviceMotion } from 'expo-sensors';
 import { stateDispatchContext } from "../redux/context";
 import { StyleSheet, Switch } from "react-native";
 
@@ -11,35 +11,48 @@ accelerometer, pedometer, deviceMotion
 
 export default function Sensors() {
     // gyroscope in degrees/second
-    const [sub, setSub] = useState(null);
+    const [subs, setSubs] = useState([null, null]);
     const [enabled, setEnabled] = useState(false);
     const dispatch = useContext(stateDispatchContext);
 
     const _subscribe = () => {
-        setSub(
-            Gyroscope.addListener(gyroscopeData => {
-                dispatch({
-                    type: 'gyro',
-                    payload: gyroscopeData
-                });
-            })
-        );
+        const gyroSub = Gyroscope.addListener(gyroscopeData => {
+            dispatch({
+                type: 'gyro',
+                payload: gyroscopeData
+            });
+        });
+
+        const accelSub = Accelerometer.addListener((data) => {
+            dispatch({
+                type: 'accelerometer',
+                payload: data
+            });
+        })
+        setSubs([gyroSub, accelSub]);
     }
 
     const _unsubscribe = () => {
-        sub && sub.remove();
-        setSub(null);
+        for(let i = subs.length-1; i>=0; i--) {
+            subs[i] && subs[i].remove();
+        }
+        setSubs([null, null]);
     };
 
     useEffect(() => {
-        Gyroscope.setUpdateInterval(1000);
         _subscribe();
         return () => _unsubscribe();
     }, []);
 
     function toggleSwitch() {
-        Gyroscope.setUpdateInterval(enabled ? 20 : 1000);
         setEnabled(!enabled);
+        const period = enabled ? 20 : 1000;
+        Gyroscope.setUpdateInterval(period);
+        Accelerometer.setUpdateInterval(period);
+        dispatch({
+            type: 'updatePeriod',
+            payload: period
+        })
     }
 
     return (

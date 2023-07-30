@@ -6,11 +6,18 @@ export default function DebugDisplay(props) {
     const state = useContext(stateContext);
 
     let lines = [];
+    /*
     for(let key in state) {
         lines.push(key+":\t"+JSON.stringify(state[key]));
     }
+    */
     for(let key in props) {
-        lines.push(key+":\t"+props[key]);
+        if(Array.isArray(props[key])) {
+            lines.push(key+":");
+            props[key].forEach((item) => {
+                lines.push('\t'+item.toFixed(2));
+            })
+        } else lines.push(key+":\t"+props[key]);
     }
     return (
         <View style={styles.container}>

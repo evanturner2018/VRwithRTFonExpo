@@ -5,3 +5,9 @@ exports.theme = {
         "color2": "#70A9A1",
         "color3": "#CFD7C7"
 }
+
+exports.params = {
+        cameraStartPosition: [0, 2, 0],
+        eyePinch: 0.5,
+        eyeSep: 0.5
+}

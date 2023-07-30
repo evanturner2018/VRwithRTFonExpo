@@ -1,4 +1,5 @@
 import { Vector3, PerspectiveCamera, Matrix4 } from "three";
+import { params } from "../assets/assets";
 
 export function initReducer() {
     return {
@@ -6,15 +7,24 @@ export function initReducer() {
             new PerspectiveCamera(70, 1.084, 0.1, 1000),
             new PerspectiveCamera(70, 1.084, 0.1, 1000)
         ],
-        position: [0, 2, 0],
+        position: flatCopy(params.cameraStartPosition),
         velocity: [0, 0, 0],
-        eyeSep: 0.5, // viewOffset?
-        eyePinch: 0.5, // radians, 0.5 magic number somehow
+        sensorUpdatePeriod: 1000, // milliseconds
+        zeroSensors: true,
+        gravity_raw: [-1, 0, 0] // g's, -1 for default landscape
     }
 }
 
 function rad(d) {
     return d*Math.PI/180;
+}
+
+function flatCopy(x) {
+    let res = [];
+    x.forEach((item) => {
+        res.push(item);
+    })
+    return res;
 }
 
 export function reducer(state, action) {
@@ -36,9 +46,9 @@ export function reducer(state, action) {
             // scale inputs to be rad/update instead of rad/s
             // (rad/1000ms)*(period ms/1 update) = rad/update
             /*
-            x *= state.updatePeriod_ms/1000;
-            y *= state.updatePeriod_ms/1000;
-            z *= state.updatePeriod_ms/1000;
+            x *= state.sensorUpdatePeriod/1000;
+            y *= state.sensorUpdatePeriod/1000;
+            z *= state.sensorUpdatePeriod/1000;
             */
             
             state.views.forEach((camera) => {
@@ -60,22 +70,53 @@ export function reducer(state, action) {
             });
             return state;
         /*
-        *   measured in m/2^s
+        *   measured in g's (9.81 m/s^2)
         *   accumulate vX/vY/vZ in m/s
         *   update position by them every second (scaled by clock delta)
         */
         case 'accelerometer':
+            // zeroing in Sensors.js slowed it down a lot
+            const g = state.zeroSensors ? 
+                [action.payload.x, action.payload.y, action.payload.z] :
+                state.gravity_raw;
+
             // transform sensor to world frame (from phone frame)
-            let a = [action.payload.x, action.payload.y, action.payload.z];
-            let v = state.velocity;
-            for(let i = 0; i<v.length; i++) {
-                v[i] += a[i]*20/1000;
+            // landscape
+            const a_p = [action.payload.y-g[1], -1*(action.payload.x-g[0]), action.payload.z-g[2]];
+            // rotate to world basis
+            const R = new Matrix4().makeRotationFromEuler(state.views[0].rotation);
+            const a_w = new Vector3().fromArray(a_p).applyMatrix4(R);
+
+            // scale and translate units to m/s
+            let v = flatCopy(state.velocity);
+            let scale = state.sensorUpdatePeriod/1000/9.81;
+            v[0] += (a_w.x)*scale;
+            v[1] += (a_w.y)*scale;
+            v[2] += (a_w.z)*scale;
+            return {...state,
+                velocity: v,
+                gravity_raw: g,
+                zeroSensors: false
+            }
+        case 'updatePeriod':
+            return {...state,
+                sensorUpdatePeriod: action.payload
+            }
+        case 'frame':
+            let p = flatCopy(state.position);
+            for(let i = 0; i<p.length; i++) {
+                p[i] += state.velocity[i];
             }
             return {...state,
-                velocity: v
+                position: p,
+                velocity: [0, 0, 0]
             }
         case 'zero':
             return initReducer();
+        case 'sensorsZeroed':
+            return {...state,
+                zeroSensors: false
+            }
     }
 }
 

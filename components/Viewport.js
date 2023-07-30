@@ -1,18 +1,18 @@
 import { useFrame } from "@react-three/fiber"
 import { useContext } from "react";
-import { stateContext } from "../redux/context";
+import { stateContext, stateDispatchContext } from "../redux/context";
 import { Color, Vector3 } from "three";
-import { theme } from "../assets/assets";
+import { theme, params } from "../assets/assets";
 
 export default function Viewport() {
     const state = useContext(stateContext);
+    const dispatch = useContext(stateDispatchContext);
 
     useFrame(({scene, gl, size})=>{
         let w = size.width;
         let h = size.height;
         gl.setClearColor(new Color(theme.dark));
         
-        let pinch = 0;
         state.views.forEach((camera, i) => {
             camera.aspect = w/2/h;
             camera.position.x = state.position[0];
@@ -21,7 +21,7 @@ export default function Viewport() {
             
             // left needs positive rotation, right needs negative
             // y-axis goes up, counter-clockwise is positive
-            pinch = (state.eyePinch/2) - (state.eyePinch)*i;
+            pinch = (params.eyePinch/2) - (params.eyePinch)*i;
             camera.rotateY(pinch);
             gl.setViewport(i*w/2, 0, w/2, h);
             gl.setScissor(i*w/2, 0, w/2, h);
@@ -31,7 +31,8 @@ export default function Viewport() {
             gl.render(scene, camera);
 
             camera.rotateY(-1*pinch);
-        })
+        });
+        dispatch({type: 'frame'});
     }, 1); // the 1 takes over rendering to make it manual
 
     return <></>;
