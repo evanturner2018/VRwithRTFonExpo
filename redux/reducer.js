@@ -63,12 +63,12 @@ export function reducer(state, action) {
 
             // Acceleration /////////////////////////////////////////////
             // calculate centripetal acceleration
-            const r = 0.1; // guess
+            const r = 10; // guess
             const a_c_direction = [-r/2, -r/2, 0]; // guess
             const omega = oldUp.angleTo(newUp) / (state.sensorUpdatePeriod/1000);
             const a_c_magnitude = Math.pow(omega, 2) * r;
             let dirVec = new Vector3().fromArray(a_c_direction).normalize();
-            dirVec.multiplyScalar(a_c_magnitude);
+            dirVec.multiplyScalar(-1*a_c_magnitude);
             
             // transform to three world frame
             const a = [

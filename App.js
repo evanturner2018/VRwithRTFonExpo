@@ -37,6 +37,7 @@ function App() {
         </Canvas>
         <Screen />
         <Sensors />
+        <DebugDisplay p={state.position} />
       </stateDispatchContext.Provider>
     </stateContext.Provider>
     
