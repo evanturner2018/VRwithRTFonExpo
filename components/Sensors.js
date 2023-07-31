@@ -11,32 +11,26 @@ accelerometer, pedometer, deviceMotion
 
 export default function Sensors() {
     // gyroscope in degrees/second
-    const [subs, setSubs] = useState([null, null]);
+    const [subs, setSubs] = useState([]);
     const [enabled, setEnabled] = useState(false);
     const dispatch = useContext(stateDispatchContext);
 
     const _subscribe = () => {
-        const gyroSub = Gyroscope.addListener(gyroscopeData => {
+        const sub = DeviceMotion.addListener((data) => {
             dispatch({
-                type: 'gyro',
-                payload: gyroscopeData
-            });
-        });
-
-        const accelSub = Accelerometer.addListener((data) => {
-            dispatch({
-                type: 'accelerometer',
+                type: 'data',
                 payload: data
             });
         })
-        setSubs([gyroSub, accelSub]);
+        
+        setSubs([sub]);
     }
 
     const _unsubscribe = () => {
         for(let i = subs.length-1; i>=0; i--) {
             subs[i] && subs[i].remove();
         }
-        setSubs([null, null]);
+        setSubs([]);
     };
 
     useEffect(() => {
@@ -47,8 +41,8 @@ export default function Sensors() {
     function toggleSwitch() {
         setEnabled(!enabled);
         const period = enabled ? 20 : 1000;
-        Gyroscope.setUpdateInterval(period);
-        Accelerometer.setUpdateInterval(period);
+        // updateInterval capped to 200ms on android, not sure on ios
+        DeviceMotion.setUpdateInterval(period);
         dispatch({
             type: 'updatePeriod',
             payload: period

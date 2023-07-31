@@ -1,7 +1,7 @@
 import { useFrame } from "@react-three/fiber"
 import { useContext } from "react";
 import { stateContext, stateDispatchContext } from "../redux/context";
-import { Color, Vector3 } from "three";
+import { Color } from "three";
 import { theme, params } from "../assets/assets";
 
 export default function Viewport() {
@@ -15,9 +15,6 @@ export default function Viewport() {
         
         state.views.forEach((camera, i) => {
             camera.aspect = w/2/h;
-            camera.position.x = state.position[0];
-            camera.position.y = state.position[1];
-            camera.position.z = state.position[2];
             
             // left needs positive rotation, right needs negative
             // y-axis goes up, counter-clockwise is positive

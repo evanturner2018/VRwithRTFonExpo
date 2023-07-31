@@ -59,7 +59,7 @@ function Screen() {
 
   async function _lock() {
     // sensor transformations assume 90degree turn ccw around z
-    await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE_RIGHT).then(
+    await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE).then(
       (val) => {},
       (err) => {
         alert('lock error: '+err);
